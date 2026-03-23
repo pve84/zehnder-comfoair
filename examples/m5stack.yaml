@@ -1,0 +1,36 @@
+# Configuration for the M5Stack rs485base with ATOM Lite
+
+substitutions:
+  tx_pin: GPIO19
+  rx_pin: GPIO22
+  update_interval: 15s
+
+esphome:
+  name: zehnder-comfoair
+  friendly_name: Zehnder Comfoair
+
+esp32: 
+  board: m5stack-atom
+  framework: 
+    type: esp-idf
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  fast_connect: on
+  min_auth_mode: wpa2
+
+api:
+  encryption:
+    key: !secret api_key
+
+ota:
+  - platform: esphome
+    password: !secret ota_password
+
+packages:
+  remote_package:
+    url: https://github.com/CodedCactus/zehnder-comfoair
+    ref: 'main'
+    files: [components/zehnder.yaml]
+    refresh: 0s
