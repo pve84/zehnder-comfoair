@@ -94,11 +94,11 @@ esphome:
            public:
             bool canHandle(AsyncWebServerRequest *request) const override {
               if (request->method() != HTTP_GET && request->method() != HTTP_POST) return false;
-              String url = request->url();
+              String url = request->url_to();
               return url == "/registers" || url == "/registers/start" || url == "/registers/status" || url == "/registers/download.csv";
             }
             void handleRequest(AsyncWebServerRequest *request) override {
-              String url = request->url();
+              String url = request->url_to();
               if (url == "/registers") {
                 String html = "<html><head><title>Zehnder Register Dump</title>";
                 html += "<style>body{font-family:sans-serif;margin:0;line-height:1.5;background:#f4f7f9;color:#333;}";
@@ -133,8 +133,8 @@ esphome:
                 id(register_dump_script).execute();
                 request->redirect("/registers");
               } else if (url == "/registers/download.csv") {
-                // Correctly serve the raw CSV buffer without duplication
-                AsyncWebServerResponse *response = request->beginResponse(200, "text/csv", (const uint8_t*)id(register_dump_result).c_str(), id(register_dump_result).size());
+                std::string &csv = id(register_dump_result);
+                AsyncWebServerResponse *response = request->beginResponse(200, "text/csv", (uint8_t*)csv.data(), csv.size());
                 response->addHeader("Content-Disposition", "attachment; filename=\"registers.csv\"");
                 request->send(response);
               }
@@ -156,7 +156,7 @@ script:
           auto *controller = id(modbus_device);
           const int batch_size = 50;
           const int total_registers = 375;
-          const int num_batches = (total_registers + batch_size - 1) / batch_size; // 8 batches
+          const int num_batches = (total_registers + batch_size - 1) / batch_size;
 
           for (int batch = 0; batch < num_batches; batch++) {
             int start = batch * batch_size;
