@@ -57,6 +57,17 @@ Three options are available for generating the required signal:
 - ESP32: built-in DAC can be used.
 - External DAC (e.g. DFRobot Gravity GP8211S) for true 0–10 V output; required if multiple wired 0–10 V inputs are used (ComfoConnect Splitter).
 
+### Filter Replacement Timer
+Since the filter status cannot be read directly from the ventilation unit, the component includes a filter replacement timer that tracks operating hours. 
+
+**Features:**
+- **Operating Hours Tracking**: Monitors filter age.
+- **Configurable Interval**: Set custom replacement intervals (30-365 days, default 180 days).
+- **Smart Alerts**: Binary sensor indicates when replacement is due.
+- **Remaining Time**: Shows days until next replacement is needed.
+- **Auto Reset**: Detect when the filters are replaced.
+
+
 ### Schematic
 The following schematic shows how to connect the hardware.
 
@@ -98,6 +109,7 @@ packages:
     ref: main
     files: [components/zehnder.yaml,
             components/fan.yaml,           # comment out fan.yaml if you don't want fan control
+            components/filter.yaml,        # comment out filter.yaml if you don't want filter replacement timer
             components/extra-sensors.yaml] # comment out extra-sensors.yaml if you don't want extra entities
     refresh: 0s
 
@@ -178,3 +190,4 @@ Have a look at the [Thermal Comfort integration](https://github.com/dolezsa/ther
 | Delta energy                     | kJ/h | The difference between supply enthalpy and extract enthalpy |
 | Efficiency of moisture retention | %    | The relative efficiency of moisture retention |
 | Efficiency of energy retention   | %    | The relative efficiency of energy retention |
+
